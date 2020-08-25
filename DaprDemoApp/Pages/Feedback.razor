@@ -1,0 +1,117 @@
+﻿@page "/feedback"
+
+@using DaprDemoApp.Data
+@inject FeedbackService feedbackService
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h6>DAPR is </h6>
+            <div id="q1" class="list-group">
+                <a class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Distributed Application Runtime that run only on Azure</p>
+                </a>
+                <a id="answer_1" class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Distributed Application Runtime that is Cloud Agnostic</p>
+                </a>
+                <a class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Distributed Application Runtime that runs only on Kubernetes</p>
+                </a>
+            </div>
+        </div>
+        <div class="col mb-2">
+            <h6>Which of the statement below would best explain the DAPR Architecture</h6>
+            <div id="q2" class="list-group">
+                <a class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Requires application that uses Dapr to have Dapr runtime code integrated with the application</p>
+                </a>
+                <a class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Exposes DAPR API's as a sidecar achitecture and can run as container or process and needs DAPR's Language specific SDK to work</p>
+                </a>
+                <a id="answer_2" class="list-group-item list-group-item-action">
+                    <p class="list-group-item-text">Exposes DAPR API's as a sidecar architecture and can run as a container or process and could work with HTTP/GRPC Protocols</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<EditForm EditContext="@editContext" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label class="control-label" for="FirstName">First Name</label>
+            <InputText @bind-Value=user.FirstName class="form-control" id="FirstName" />
+            <ValidationMessage For="@(() => user.FirstName)" />
+        </div>
+        <div class="form-group col-md-6">
+            <label class="control-label" for="LastName">Last Name</label>
+            <InputText @bind-Value=user.LastName class="form-control" id="LastName" />
+            <ValidationMessage For="@(() => user.LastName)" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label class="control-label" for="EmailId">Email ID (Optional)</label>
+            <InputText @bind-Value=user.EmailId class="form-control" id="EmailId" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="formControlTextarea">Additional Message</label>
+            <InputTextArea @bind-Value=user.Message class="form-control" id="exampleFormControlTextarea1" rows="2"></InputTextArea>
+            <ValidationMessage For="@(() => user.Message)" />
+        </div>
+    </div>
+    <input type="submit" class="btn btn-primary" value="Submit" /><span class=".mt-3 .px-3" style="@messageStyles">@message</span>
+
+</EditForm>
+
+@code
+ {
+    [Inject]
+    protected IJSRuntime JsRuntime { get; set; }
+    UserFeedback user = new UserFeedback();
+    private EditContext editContext;
+    private string messageStyles = "visibility:hidden";
+    private string message;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        messageStyles = "visibility:hidden";
+        if (firstRender)
+        {
+            JsRuntime.InvokeVoidAsync("selectanswer");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        messageStyles = "visibility:hidden";        
+        editContext = new EditContext(user);
+    }
+
+    private async Task HandleSubmit()
+    {
+        var isValid = editContext.Validate();
+        
+        if (isValid)
+        {
+            var response = await feedbackService.SubmitFeedback(user);
+
+            if (response)
+            {               
+                user = new UserFeedback();
+                await JsRuntime.InvokeVoidAsync("highlightanswer");
+                messageStyles = "color:green";
+                message = "Thank you for your response !";
+            }
+            else
+            {
+                messageStyles = "color:red";
+                message = "Error in publishing data";
+            }
+        }
+    }
+}

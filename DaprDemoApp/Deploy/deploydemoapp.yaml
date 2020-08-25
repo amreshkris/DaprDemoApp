@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daprdemoapp
+spec:
+  selector:
+    matchLabels:
+      app: daprdemoapp
+  template:
+    metadata:
+      labels:
+        app: daprdemoapp
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/id: "daprdemoapp"
+        dapr.io/port : "80"
+    spec:
+      containers:
+      - name: daprdemoapp
+        image: daprdemoapp:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: daprdemoapp
+spec:
+  selector:
+    app: daprdemoapp
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort
+
