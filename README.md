@@ -15,7 +15,9 @@ Visit DAPR Official Documentation at - [DAPR](https://dapr.io/)
 
 This repository contains the front end code and publishes to local component *pubsub.redis* defined as a component. 
 
+Backend API and Component Definition Available at - [Dapr Demo API](https://github.com/amreshkris/daprDemoAPI)
+
 # Architecture Diagram
 
-<img src="./DaprDemoApp/Images/Demo_ArchitectureDiagram.png" width=250>
-    
+<img src="./DaprDemoApp/Images/Demo_ArchitectureDiagram.png">
+
