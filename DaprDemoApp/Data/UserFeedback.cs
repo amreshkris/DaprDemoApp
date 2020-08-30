@@ -18,7 +18,7 @@ namespace DaprDemoApp.Data
 
         public bool DoesLikeSession { get; set; } = true;
 
-        [StringLength(5,ErrorMessage = "Please shorten the message to <50 characters.")]
+        [StringLength(50,ErrorMessage = "Please shorten the message to <50 characters.")]
         public string Message { get; set; }
         public string EmailId { get; set; }
     }

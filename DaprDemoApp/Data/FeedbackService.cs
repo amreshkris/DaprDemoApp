@@ -40,7 +40,8 @@ namespace DaprDemoApp.Data
             //DAPR PUB-SUB URL 
             //http://localhost:3500/v1.0/publish/<pub-sub-component-name>/<topic-name>
 
-            var response = await client.PostAsync("http://localhost:3500/v1.0/publish/messagebus/feedback", httpContent);
+            var response = await client.PostAsync("http://localhost:3500/v1.0/publish/messagebus/feedback",
+                                 httpContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -49,7 +50,7 @@ namespace DaprDemoApp.Data
             }
 
             _logger.LogError("Something went wrong");
-            return false;           
+            return false;
         }
     }
 }
